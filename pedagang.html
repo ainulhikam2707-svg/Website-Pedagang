@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pedagang — Order Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ════════════════════════════════════════
+   RESET & ROOT
+   ════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg:          #08090b;
+  --card:        #111315;
+  --card-hover:  #161920;
+  --input-bg:    #0e1012;
+  --accent:      #c9a84c;
+  --accent2:     #e8d49a;
+  --accent-glow: rgba(201,168,76,.18);
+  --accent-dim:  rgba(201,168,76,.08);
+  --text:        #eae6df;
+  --text-dim:    #6b7280;
+  --border:      rgba(201,168,76,.14);
+  --border-card: rgba(255,255,255,.06);
+  --red:         #e05555;
+  --green:       #4ade80;
+  --radius:      14px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ════════════════════════════════════════
+   AMBIENT BG
+   ════════════════════════════════════════ */
+.ambient {
+  position: fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 30%, rgba(201,168,76,.06) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(80,140,220,.04) 0%, transparent 60%);
+}
+
+/* ════════════════════════════════════════
+   WRAPPER
+   ════════════════════════════════════════ */
+.wrapper {
+  position: relative; z-index:1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 56px 22px 100px;
+}
+
+/* ════════════════════════════════════════
+   HEADER
+   ════════════════════════════════════════ */
+.header { text-align:center; margin-bottom:48px; }
+
+.header .pill {
+  display:inline-block;
+  font-size:10.5px;
+  letter-spacing:2.8px;
+  text-transform:uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border:1px solid var(--border);
+  padding:6px 18px;
+  border-radius:30px;
+  margin-bottom:18px;
+  animation: fadeDown .6s ease both;
+}
+
+.header h1 {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:clamp(32px,6vw,46px);
+  letter-spacing:-1.5px;
+  background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 60%, #a07830 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeDown .7s .1s ease both;
+}
+
+.header p {
+  color: var(--text-dim);
+  font-size:14px;
+  font-weight:300;
+  margin-top:10px;
+  animation: fadeDown .7s .2s ease both;
+}
+
+/* ════════════════════════════════════════
+   CARD SECTION
+   ════════════════════════════════════════ */
+.card {
+  background: var(--card);
+  border:1px solid var(--border-card);
+  border-radius: var(--radius);
+  padding: 30px 28px;
+  margin-bottom: 22px;
+  backdrop-filter: blur(4px);
+  animation: cardUp .5s ease both;
+}
+.card:nth-child(2){ animation-delay:.15s }
+.card:nth-child(3){ animation-delay:.25s }
+.card:nth-child(4){ animation-delay:.35s }
+.card:nth-child(5){ animation-delay:.45s }
+.card:nth-child(6){ animation-delay:.55s }
+
+.card-title {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:.5px;
+  color: var(--accent2);
+  margin-bottom:20px;
+  display:flex; align-items:center; gap:10px;
+}
+.card-title .icon { font-size:18px; }
+
+/* ════════════════════════════════════════
+   INPUT FIELDS
+   ════════════════════════════════════════ */
+.field { margin-bottom:18px; }
+.field:last-child { margin-bottom:0; }
+
+.field label {
+  display:block;
+  font-size:12px;
+  font-weight:500;
+  color: var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  margin-bottom:8px;
+}
+
+.field input {
+  width:100%;
+  background: var(--input-bg);
+  border:1px solid var(--border-card);
+  border-radius:10px;
+  padding:13px 16px;
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  color: var(--text);
+  outline:none;
+  transition: border-color .25s, box-shadow .25s;
+}
+.field input::placeholder { color: var(--text-dim); }
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ════════════════════════════════════════
+   PACKAGE GRID
+   ════════════════════════════════════════ */
+.pkg-grid {
+  display:grid;
+  grid-template-columns: repeat(5,1fr);
+  gap:10px;
+}
+
+.pkg-card {
+  background: var(--input-bg);
+  border:1.5px solid var(--border-card);
+  border-radius:12px;
+  padding:18px 8px 14px;
+  text-align:center;
+  cursor:pointer;
+  transition: all .22s ease;
+  position:relative;
+  user-select:none;
+}
+.pkg-card:hover {
+  border-color: rgba(201,168,76,.35);
+  background: var(--accent-dim);
+  transform: translateY(-2px);
+}
+.pkg-card.active {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+.pkg-card.active .pkg-check {
+  opacity:1; transform:scale(1);
+}
+
+.pkg-check {
+  position:absolute; top:7px; right:7px;
+  width:18px; height:18px;
+  background: var(--accent);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:#08090b; font-weight:700;
+  opacity:0; transform:scale(.5);
+  transition: .2s ease;
+}
+
+.pkg-emoji { font-size:24px; margin-bottom:6px; }
+.pkg-name {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:11px;
+  color: var(--text);
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}
+.pkg-price {
+  font-size:11px;
+  color: var(--accent);
+  font-weight:600;
+  margin-top:4px;
+}
+
+/* QTY ROW */
+.pkg-qty {
+  display:none;
+  align-items:center; justify-content:center; gap:6px;
+  margin-top:10px;
+}
+.pkg-card.active .pkg-qty { display:flex; }
+
+.qty-btn {
+  width:22px; height:22px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background: var(--card);
+  color: var(--accent2);
+  font-size:15px; font-weight:600;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition: background .15s;
+  line-height:1;
+}
+.qty-btn:hover { background: var(--accent-dim); }
+.qty-val {
+  font-size:13px;
+  font-weight:600;
+  color: var(--text);
+  min-width:16px;
+  text-align:center;
+}
+
+/* ════════════════════════════════════════
+   TOTAL PRICE ROW
+   ════════════════════════════════════════ */
+.total-row {
+  display:flex; justify-content:space-between; align-items:center;
+  background: var(--input-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 22px;
+}
+.total-label {
+  font-size:13px; color: var(--text-dim); font-weight:500;
+}
+.total-value {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:26px;
+  color: var(--accent2);
+  letter-spacing:-.5px;
+  transition: transform .2s;
+}
+.total-value.bump { transform:scale(1.12); }
+
+/* ════════════════════════════════════════
+   UPLOAD ZONE
+   ════════════════════════════════════════ */
+.upload-zone {
+  border:1.5px dashed var(--border);
+  border-radius:12px;
+  padding:36px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition: all .25s;
+  position:relative;
+  background: var(--input-bg);
+}
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+.upload-zone .uz-icon { font-size:34px; margin-bottom:8px; }
+.upload-zone .uz-title {
+  font-size:13.5px; font-weight:500; color: var(--text);
+}
+.upload-zone .uz-sub {
+  font-size:11.5px; color: var(--text-dim); margin-top:5px;
+}
+.upload-zone input[type=file] {
+  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+}
+
+/* Preview strip */
+.preview-strip {
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;
+}
+.preview-thumb {
+  width:68px; height:68px;
+  border-radius:8px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border);
+  animation: popIn .25s ease both;
+}
+.preview-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.thumb-remove {
+  position:absolute; top:3px; right:3px;
+  width:18px; height:18px;
+  background: rgba(0,0,0,.75);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:10px; color:#fff;
+  opacity:0; transition: opacity .15s;
+}
+.preview-thumb:hover .thumb-remove { opacity:1; }
+
+
+/* ════════════════════════════════════════
+   SUBMIT BUTTON
+   ════════════════════════════════════════ */
+.submit-btn {
+  width:100%;
+  padding:17px;
+  border:none;
+  border-radius:12px;
+  background: linear-gradient(135deg, var(--accent) 0%, #b08a3a 100%);
+  color:#08090b;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition: transform .2s, box-shadow .2s, opacity .2s;
+  position:relative;
+  overflow:hidden;
+  animation: cardUp .5s .6s ease both;
+}
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px var(--accent-glow);
+}
+.submit-btn:active { transform: translateY(0); }
+.submit-btn:disabled { opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
+
+.submit-btn .btn-text { position:relative; z-index:1; }
+.submit-btn .btn-shine {
+  position:absolute; top:0; left:-100%; width:60%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+  transition: left .55s ease;
+}
+.submit-btn:not(:disabled):hover .btn-shine { left:150%; }
+
+/* ════════════════════════════════════════
+   TOAST
+   ════════════════════════════════════════ */
+.toast {
+  position:fixed; bottom:30px; left:50%;
+  transform:translateX(-50%) translateY(120px);
+  background:#141720; border:1px solid var(--border-card);
+  border-radius:14px; padding:15px 26px;
+  font-size:13.5px; font-weight:500;
+  display:flex; align-items:center; gap:12px;
+  z-index:999;
+  transition: transform .38s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity:0; pointer-events:none;
+  max-width:90vw; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.toast .t-icon { font-size:18px; flex-shrink:0; }
+.toast.success { border-color: rgba(74,222,128,.3); }
+.toast.error   { border-color: rgba(224,85,85,.3); }
+.toast.loading { border-color: rgba(201,168,76,.3); }
+
+.spinner {
+  width:18px; height:18px;
+  border:2.5px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius:50%;
+  animation: spin .55s linear infinite;
+}
+
+/* ════════════════════════════════════════
+   ANIMATIONS
+   ════════════════════════════════════════ */
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes cardUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes popIn {
+  from { opacity:0; transform:scale(.55); }
+  to   { opacity:1; transform:scale(1); }
+}
+@keyframes spin {
+  to { transform:rotate(360deg); }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════ */
+@media (max-width:520px) {
+  .wrapper { padding:36px 14px 80px; }
+  .card { padding:22px 18px; }
+  .pkg-grid { grid-template-columns: repeat(3,1fr); }
+  .header h1 { font-size:28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="ambient"></div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="pill">⚙ Sistem Order Pedagang</div>
+    <h1>Order Form</h1>
+    <p>Lengkapi semua field — kirim otomatis ke Discord via Webhook</p>
+  </div>
+
+
+  <!-- CARD 1 — NAMA ANGGOTA -->
+  <div class="card">
+    <div class="card-title"><span class="icon">👤</span> Nama Anggota</div>
+    <div class="field">
+      <label>Nama Lengkap</label>
+      <input type="text" id="namaAnggota" placeholder="Contoh: Budi Santoso" />
+    </div>
+  </div>
+
+  <!-- CARD 2 — HANDLE -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏷️</span> Nama Handle</div>
+    <div class="field">
+      <label>Handle / Username</label>
+      <input type="text" id="namaHandle" placeholder="Contoh: @BudiTrader" />
+    </div>
+  </div>
+
+  <!-- CARD 3 — PAKET -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📦</span> Pilih Paket</div>
+    <div class="pkg-grid" id="pkgGrid"><!-- JS renders --></div>
+  </div>
+
+  <!-- CARD 4 — TOTAL -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💰</span> Total Harga</div>
+    <div class="total-row">
+      <span class="total-label">Jumlah Bayar</span>
+      <span class="total-value" id="totalPrice">Rp 0</span>
+    </div>
+  </div>
+
+  <!-- CARD 5 — BUKTI FOTO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🖼️</span> Bukti Foto Pembayaran</div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" multiple />
+      <div class="uz-icon">📤</div>
+      <div class="uz-title">Drag &amp; Drop atau Klik untuk Upload</div>
+      <div class="uz-sub">JPG, PNG, WEBP · Maks 8MB per foto</div>
+    </div>
+    <div class="preview-strip" id="previewStrip"></div>
+  </div>
+
+  <!-- SUBMIT -->
+  <button class="submit-btn" id="submitBtn" disabled>
+    <span class="btn-shine"></span>
+    <span class="btn-text">Kirim ke Discord ✈️</span>
+  </button>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="t-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">Berhasil!</span>
+</div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════ -->
+<script>
+// ─── PACKAGES ───────────────────────────────
+const PACKAGES = [
+  { id:'small',  name:'Small',  emoji:'🥉', price:50000  },
+  { id:'medium', name:'Medium', emoji:'🥈', price:100000 },
+  { id:'high',   name:'High',   emoji:'🥇', price:200000 },
+  { id:'combo',  name:'Combo',  emoji:'🎯', price:300000 },
+  { id:'extra',  name:'Extra',  emoji:'⭐', price:500000 },
+];
+
+// ─── STATE ──────────────────────────────────
+let state = { selected:{}, files:[] };
+
+// ─── HELPERS ────────────────────────────────
+function formatRp(n){
+  return 'Rp ' + n.toLocaleString('id-ID');
+}
+
+// ─── RENDER PACKAGE CARDS ───────────────────
+const pkgGrid = document.getElementById('pkgGrid');
+PACKAGES.forEach(pkg => {
+  const el = document.createElement('div');
+  el.className = 'pkg-card';
+  el.dataset.id = pkg.id;
+  el.innerHTML = `
+    <div class="pkg-check">✓</div>
+    <div class="pkg-emoji">${pkg.emoji}</div>
+    <div class="pkg-name">${pkg.name}</div>
+    <div class="pkg-price">${formatRp(pkg.price)}</div>
+    <div class="pkg-qty">
+      <button class="qty-btn" data-action="dec" data-id="${pkg.id}">−</button>
+      <span class="qty-val" id="qty-${pkg.id}">1</span>
+      <button class="qty-btn" data-action="inc" data-id="${pkg.id}">+</button>
+    </div>`;
+  pkgGrid.appendChild(el);
+});
+
+// ─── CLICK: TOGGLE PACKAGE ──────────────────
+pkgGrid.addEventListener('click', e => {
+  if (e.target.closest('.qty-btn')) return; // handled below
+  const card = e.target.closest('.pkg-card');
+  if (!card) return;
+  const id = card.dataset.id;
+  if (state.selected[id]) { delete state.selected[id]; }
+  else { state.selected[id] = 1; }
+  syncPkgUI(); updateTotal(); validateForm();
+});
+
+// ─── CLICK: QTY +/- ────────────────────────
+pkgGrid.addEventListener('click', e => {
+  const btn = e.target.closest('.qty-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  const id  = btn.dataset.id;
+  const act = btn.dataset.action;
+  let qty   = state.selected[id] || 1;
+
+  qty += (act === 'inc') ? 1 : -1;
+  if (qty < 1) { delete state.selected[id]; }
+  else { state.selected[id] = qty; }
+
+  syncPkgUI(); updateTotal(); validateForm();
+});
+
+function syncPkgUI(){
+  document.querySelectorAll('.pkg-card').forEach(card => {
+    const id = card.dataset.id;
+    card.classList.toggle('active', !!state.selected[id]);
+    document.getElementById('qty-'+id).textContent = state.selected[id] || 1;
+  });
+}
+
+// ─── TOTAL PRICE ────────────────────────────
+function updateTotal(){
+  let t = 0;
+  PACKAGES.forEach(p => { if(state.selected[p.id]) t += p.price * state.selected[p.id]; });
+  const el = document.getElementById('totalPrice');
+  el.textContent = formatRp(t);
+  el.classList.add('bump');
+  setTimeout(()=> el.classList.remove('bump'), 220);
+}
+
+// ─── FILE UPLOAD ────────────────────────────
+const fileInput    = document.getElementById('fileInput');
+const uploadZone   = document.getElementById('uploadZone');
+const previewStrip = document.getElementById('previewStrip');
+
+uploadZone.addEventListener('dragover',  e=>{ e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', e=>{ e.preventDefault(); uploadZone.classList.remove('dragover'); });
+uploadZone.addEventListener('drop', e=>{
+  e.preventDefault(); uploadZone.classList.remove('dragover');
+  addFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', e=> addFiles(e.target.files));
+
+function addFiles(fileList){
+  Array.from(fileList).forEach(f=>{
+    if(!f.type.startsWith('image/')) return;
+    if(f.size > 8*1024*1024) return;
+    state.files.push(f);
+  });
+  renderPreviews(); validateForm();
+}
+
+function renderPreviews(){
+  previewStrip.innerHTML = '';
+  state.files.forEach((file,i)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'preview-thumb';
+    const reader = new FileReader();
+    reader.onload = ev => {
+      wrap.innerHTML = `<img src="${ev.target.result}" alt="bukti" /><div class="thumb-remove" data-idx="${i}">✕</div>`;
+    };
+    reader.readAsDataURL(file);
+    previewStrip.appendChild(wrap);
+  });
+}
+
+previewStrip.addEventListener('click', e=>{
+  const rm = e.target.closest('.thumb-remove');
+  if(!rm) return;
+  state.files.splice(parseInt(rm.dataset.idx),1);
+  renderPreviews(); validateForm();
+});
+
+// ─── WEBHOOK (hardcoded) ────────────────────
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1467472655161491693/7zAtxoxFpF1Odiq9CRKw3oKRVQGsrDULtIFdUd0I2f86xNxGdg1cU_-aekUYmrdqOzQu';
+
+// ─── VALIDATION ─────────────────────────────
+function validateForm(){
+  const nama   = document.getElementById('namaAnggota').value.trim();
+  const handle = document.getElementById('namaHandle').value.trim();
+  const hasPkg = Object.keys(state.selected).length > 0;
+  const hasFoto= state.files.length > 0;
+  document.getElementById('submitBtn').disabled = !(nama && handle && hasPkg && hasFoto);
+}
+document.getElementById('namaAnggota').addEventListener('input', validateForm);
+document.getElementById('namaHandle').addEventListener('input', validateForm);
+
+function showToast(msg, type='success'){
+  const toast = document.getElementById('toast');
+  const icon  = document.getElementById('toastIcon');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.className = 'toast ' + type;
+  icon.innerHTML = type==='loading' ? '<div class="spinner"></div>' : type==='success' ? '✅' : '❌';
+  toast.classList.add('show');
+  if(type !== 'loading') setTimeout(()=> toast.classList.remove('show'), 3400);
+}
+function hideToast(){ document.getElementById('toast').classList.remove('show'); }
+
+// ─── SUBMIT → DISCORD WEBHOOK ───────────────
+document.getElementById('submitBtn').addEventListener('click', async ()=>{
+  const nama       = document.getElementById('namaAnggota').value.trim();
+  const handle     = document.getElementById('namaHandle').value.trim();
+
+  // Build summary lines
+  let lines = [], total = 0;
+  PACKAGES.forEach(p=>{
+    if(state.selected[p.id]){
+      const qty = state.selected[p.id];
+      const sub = p.price * qty;
+      total += sub;
+      lines.push(`${p.emoji} **${p.name}** × ${qty}  →  ${formatRp(sub)}`);
+    }
+  });
+
+  // Discord Embed
+  const embed = {
+    title: '📦 Order Baru Masuk',
+    color: 0xC9A84C,
+    description: '> Pesanan baru dari pedagang telah diterima.\n> Silakan verifikasi bukti pembayaran di bawah.',
+    fields:[
+      { name:'👤 Nama Anggota', value: nama,   inline:true  },
+      { name:'🏷️ Handle',      value: handle, inline:true  },
+      { name:'\u200B',          value:'\u200B', inline:true },
+      { name:'📦 Paket Dibeli', value: lines.join('\n'),     inline:false },
+      { name:'💰 Total Harga',  value: `### ${formatRp(total)}`, inline:false },
+    ],
+    footer:{
+      text:'Pedagang Order System • Auto-sent',
+    },
+    timestamp: new Date().toISOString()
+  };
+
+  showToast('Mengirim data ke Discord…', 'loading');
+  document.getElementById('submitBtn').disabled = true;
+
+  // 1) Send embed
+  try {
+    const r = await fetch(WEBHOOK_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ embeds:[embed] })
+    });
+    if(!r.ok) throw new Error('Status: '+r.status);
+  } catch(err){
+    hideToast();
+    showToast('Gagal kirim data — '+err.message, 'error');
+    document.getElementById('submitBtn').disabled = false;
+    return;
+  }
+
+  // 2) Send each photo as multipart file
+  for(let i=0; i<state.files.length; i++){
+    const formData = new FormData();
+    formData.append('file', state.files[i], state.files[i].name);
+    if(i===0){
+      formData.append('payload_json', JSON.stringify({
+        content: `📸 **Bukti Pembayaran** — ${nama} (${handle})`
+      }));
+    }
+    try {
+      const r = await fetch(WEBHOOK_URL, { method:'POST', body: formData });
+      if(!r.ok) throw new Error('Foto #'+(i+1)+' Status: '+r.status);
+    } catch(err){
+      hideToast();
+      showToast('Gagal upload foto #'+(i+1), 'error');
+      document.getElementById('submitBtn').disabled = false;
+      return;
+    }
+  }
+
+  // 3) Success — reset
+  hideToast();
+  showToast('Order berhasil dikirim ke Discord!', 'success');
+
+  setTimeout(()=>{
+    document.getElementById('namaAnggota').value = '';
+    document.getElementById('namaHandle').value  = '';
+    state.selected = {}; state.files = [];
+    syncPkgUI(); updateTotal(); renderPreviews(); validateForm();
+  }, 1600);
+});
+</script>
+</body>
+</html>
